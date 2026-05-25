@@ -79,8 +79,10 @@ export const sellers: Seller[] = [
     slug: "vintage-find",
     description: "Pre-loved fashion treasures. Unique pieces with stories to tell.",
     logo: "/images/sellers/vintage-find.svg",
-    joinedYear: 2025,
+    joinedYear: 2026,
+    joinedDate: "2026-02-10",
     rating: 4.0,
+    boostActive: true,
   },
   {
     id: "s10",
@@ -88,8 +90,10 @@ export const sellers: Seller[] = [
     slug: "drop-style",
     description: "Trendy fashion at unbeatable prices. New drops every week.",
     logo: "/images/sellers/drop-style.svg",
-    joinedYear: 2025,
+    joinedYear: 2026,
+    joinedDate: "2026-03-01",
     rating: 3.9,
+    boostActive: true,
   },
   {
     id: "s11",
@@ -98,7 +102,9 @@ export const sellers: Seller[] = [
     description: "Handcrafted accessories and jewelry. Designed in Warsaw, made with love.",
     logo: "/images/sellers/kasia-creates.svg",
     joinedYear: 2026,
+    joinedDate: "2026-04-02",
     rating: 4.1,
+    boostActive: false,
   },
   {
     id: "s12",
@@ -107,7 +113,9 @@ export const sellers: Seller[] = [
     description: "New on FashionHero. Casual basics for everyday wear.",
     logo: "/images/sellers/first-step.svg",
     joinedYear: 2026,
+    joinedDate: "2026-05-01",
     rating: 0,
+    boostActive: true,
   },
 ];
 
@@ -121,4 +129,18 @@ export function getSellerById(id: string): Seller | undefined {
 
 export function getAllSellers(): Seller[] {
   return sellers;
+}
+
+export function getDaysOnPlatform(seller: Seller): number {
+  const start = seller.joinedDate ? new Date(seller.joinedDate) : new Date(`${seller.joinedYear}-01-01`);
+  const now = new Date();
+  return Math.floor((now.getTime() - start.getTime()) / (1000 * 60 * 60 * 24));
+}
+
+export function isNewSeller(seller: Seller): boolean {
+  return getDaysOnPlatform(seller) < 90;
+}
+
+export function getBoostedSellers(): Seller[] {
+  return sellers.filter((s) => s.boostActive);
 }

@@ -5,5 +5,7 @@ export interface Seller {
   description: string;
   logo: string;
   joinedYear: number;
+  joinedDate?: string;
   rating: number;
+  boostActive?: boolean;
 }
