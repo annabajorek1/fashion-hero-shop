@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import { CloseIcon, SearchIcon } from "./icons";
 import { products } from "@/data/products";
+import posthog from "posthog-js";
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -46,6 +47,17 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
       return () => document.removeEventListener("keydown", handleKeyDown);
     }
   }, [isOpen, onClose]);
+
+  useEffect(() => {
+    if (!query.trim()) return;
+    const timer = setTimeout(() => {
+      posthog.capture("search_performed", {
+        query: query.trim(),
+        result_count: results.length,
+      });
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [query, results.length]);
 
   if (!isOpen) return null;
 

@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { useCart } from "@/components/cart-provider";
+import posthog from "posthog-js";
 
 export default function CheckoutPage() {
   const { items } = useCart();
@@ -12,6 +14,35 @@ export default function CheckoutPage() {
   );
   const shipping = subtotal >= 299 ? 0 : 19.9;
   const total = subtotal + shipping;
+
+  useEffect(() => {
+    if (items.length > 0) {
+      posthog.capture("checkout_started", {
+        item_count: items.reduce((sum, item) => sum + item.quantity, 0),
+        subtotal,
+        total,
+        currency: "PLN",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function handlePlaceOrder() {
+    posthog.capture("order_placed", {
+      item_count: items.reduce((sum, item) => sum + item.quantity, 0),
+      subtotal,
+      total,
+      currency: "PLN",
+      items: items.map((item) => ({
+        product_id: item.product.id,
+        product_name: item.product.name,
+        price: item.product.price,
+        quantity: item.quantity,
+        color: item.color.name,
+        size: item.size,
+      })),
+    });
+  }
 
   return (
     <main className="max-w-6xl mx-auto px-4 md:px-8 py-8 md:py-12">
@@ -127,7 +158,7 @@ export default function CheckoutPage() {
             </section>
 
             {/* Place Order */}
-            <button className="btn-cta w-full sm:w-auto sm:min-w-[280px]">
+            <button onClick={handlePlaceOrder} className="btn-cta w-full sm:w-auto sm:min-w-[280px]">
               PLACE ORDER
             </button>
           </div>

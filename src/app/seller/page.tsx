@@ -7,6 +7,7 @@ import { useBoost } from "@/components/boost-provider";
 import { BoostModal } from "@/components/boost-modal";
 import { ProductCard } from "@/components/product-card";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/icons";
+import posthog from "posthog-js";
 
 const DEMO_SELLER_SLUG = "kasia-creates";
 
@@ -26,6 +27,12 @@ export default function SellerPage() {
 
   function handleActivate() {
     activateBoost(seller.id);
+    posthog.capture("seller_boost_activated", {
+      seller_id: seller.id,
+      seller_name: seller.name,
+      days_on_platform: daysOnPlatform,
+      days_remaining: boostDeadlineDays,
+    });
     setShowModal(false);
   }
 
